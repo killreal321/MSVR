@@ -1,39 +1,31 @@
 // Vertex shader
 const vertexShaderSource = `
 attribute vec3 vertex;
-uniform mat4 ModelViewMatrix,ProjectionMatrix;
-varying vec3 vertPos;
+attribute vec2 textureCoords;
 
-attribute vec2 texture;
+uniform mat4 ModelViewMatrix, ProjectionMatrix;
 
-varying vec2 v_texcoord;
-uniform float rotA;
-
-
+varying vec2 vtextureCoords;
 
 void main() {
-    vec4 vertPos4 = ModelViewMatrix * vec4(vertex, 1.0);
-    v_texcoord = texture;
-    gl_Position = ProjectionMatrix * vertPos4;
-
-
+    vec4 vertPosition4 = ModelViewMatrix * vec4(vertex, 1.0);
+    vec3 vertPosition = vec3(vertPosition4) / vertPosition4.w;
+    vtextureCoords = textureCoords;
+    gl_Position = ProjectionMatrix*vertPosition4;
 }`;
-
 
 // Fragment shader
 const fragmentShaderSource = `
 #ifdef GL_FRAGMENT_PRECISION_HIGH
-   precision highp float;
+    precision highp float;
 #else
-   precision mediump float;
+    precision mediump float;
 #endif
 
-varying vec2 v_texcoord;
-uniform sampler2D tmu;
-uniform float rotA;
-precision mediump float;
+varying vec2 vtextureCoords;
+uniform sampler2D textureU;
 
 void main() {
-    vec4 texColor = texture2D(tmu, v_texcoord);
-    gl_FragColor = texColor;
+    vec4 texture = texture2D(textureU, vtextureCoords);
+    gl_FragColor = texture;
 }`;

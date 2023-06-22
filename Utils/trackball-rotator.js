@@ -89,6 +89,40 @@ function TrackballRotator(canvas, callback, viewDistance, viewpointDirection, vi
     this.setView(viewDistance, viewpointDirection, viewUp);
     canvas.addEventListener("mousedown", doMouseDown, false);
     canvas.addEventListener("touchstart", doTouchStart, false);
+    window.addEventListener("deviceorientation", function(evt) {
+        var degtorad = Math.PI / 180; // Degree-to-Radian conversion
+
+        var _x = evt.beta  ? evt.beta  * degtorad : 0; // beta value
+        var _y = evt.gamma ? evt.gamma * degtorad : 0; // gamma value
+        var _z = evt.alpha ? evt.alpha * degtorad : 0; // alpha value
+
+        var cX = Math.cos( _x );
+        var cY = Math.cos( _y );
+        var cZ = Math.cos( _z );
+        var sX = Math.sin( _x );
+        var sY = Math.sin( _y );
+        var sZ = Math.sin( _z );
+
+        //
+        // ZXY rotation matrix construction.
+        //
+
+        var m11 = cZ * cY - sZ * sX * sY;
+        var m12 = - cX * sZ;
+        var m13 = cY * sZ * sX + cZ * sY;
+
+        var m21 = cY * sZ + cZ * sX * sY;
+        var m22 = cZ * cX;
+        var m23 = sZ * sY - cZ * cY * sX;
+
+        var m31 = - cX * sY;
+        var m32 = sX;
+        var m33 = cX * cY;
+
+        unitx = [m11,    m12,    m13];
+        unity = [m21,    m22,    m23];
+        unitz = [m31,    m32,    m33];
+    }, true);
     function applyTransvection(e1, e2) {  // rotate vector e1 onto e2
         function reflectInAxis(axis, source, destination) {
             var s = 2 * (axis[0] * source[0] + axis[1] * source[1] + axis[2] * source[2]);
@@ -252,5 +286,3 @@ function TrackballRotator(canvas, callback, viewDistance, viewpointDirection, vi
         c[2] = z;
     }
 }
-
-
