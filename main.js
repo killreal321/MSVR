@@ -532,7 +532,7 @@ function init() {
     }
   });  
 
-  let filter = document.getElementById("filterCheckbox");
+  let filter = document.querySelector(".filterCheckbox");
 
   filter.addEventListener("change", function () {
     if (filter.checked) {
