@@ -93,38 +93,44 @@
         <label for="xPosition">Горизонталь Сфери</label>
         <input
           id="xPosition"
-          type="number"
+          type="range"
           name="xPosition"
           min="-45"
           max="45"
           step="2"
           value="0"
+          style="display: inline-block;"
         />
+        <p id="rangeValue" style="display: inline-block">0</p>
       </div>
 
       <div>
         <label for="yPosition">Вертикаль Сфери</label>
         <input 
           id="yPosition"
-          type="number"
+          type="range"
           name="yPosition"
           min="-45"
           max="45"
           step="2"
           value="0"
-        />
+          style="display: inline-block;"
+          />
+          <p id="rangeValue1" style="display: inline-block">0</p>
       </div>
       <div">
         <label for="zPosition">Глубина сфери</label>
         <input
           id="zPosition"
-          type="number"
+          type="range"
           name="zPosition"
           min="-1"
           max="1"
           step="0.1"
           value="0"
-        />
+          style="display: inline-block;"
+          />
+          <p id="rangeValue2" style="display: inline-block">0</p>
       </div>
     </div>
 

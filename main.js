@@ -463,14 +463,18 @@ function init() {
     return;
   }
 
-  const eyeSeparationInput = document.querySelector(".eyeSeparation");
-  const convergenceInput = document.querySelector(".convergence");
-  const fieldOfViewInput = document.querySelector(".fieldOfView");
-  const nearInput = document.querySelector(".near");
+  const eyeSeparationInput = document.querySelector('[for="eyeSeparation"]');
+  const convergenceInput = document.querySelector('[for="convergence"]');
+  const fieldOfViewInput = document.querySelector('[for="fieldOfViev"]');
+  const nearInput = document.querySelector('[for="near"]');
   
-  const xPositionInput = document.querySelector(".xPosition");
-  const yPositionInput = document.querySelector(".yPosition");
-  const zPositionInput = document.querySelector(".zPosition");
+  const yPositionInput = document.querySelector('[for="yPosition"]');
+  const xPositionInput = document.querySelector('[for="xPosition"]');
+  const zPositionInput = document.querySelector('[for="yPosition"]');
+
+  const rangeValue = document.getElementById('rangeValue');
+  const rangeValue1 = document.getElementById('rangeValue1');
+  const rangeValue2 = document.getElementById('rangeValue2');
   
   
   eyeSeparationInput.addEventListener("input", () => {
@@ -499,6 +503,16 @@ function init() {
   
   zPositionInput.addEventListener("input", () => {
     draw();
+  });
+
+  xPositionInput.addEventListener('input', function() {
+    rangeValue.textContent = xPositionInput.value;
+  });
+  yPositionInput.addEventListener('input', function() {
+    rangeValue1.textContent = yPositionInput.value;
+  });
+  zPositionInput.addEventListener('input', function() {
+    rangeValue2.textContent = zPositionInput.value;
   });
   
   spaceball = new TrackballRotator(canvas, draw, 0);
@@ -604,3 +618,4 @@ const loadSphereTexture = () => {
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
   });
 };
+
