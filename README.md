@@ -8,7 +8,7 @@ I set up two cameras: One for the left eye and one for the right eye. Each camer
 I rendered the scene twice, once for each camera, but with slightly different viewpoints corresponding to the desired disparity.
 
 I combined the resulting left and right eye renderings into a single stereo image or apply additional techniques like anaglyph rendering (red-cyan glasses) or shutter glasses to achieve the perception of depth. 
-
+(matAccumLeft, matAccumRight)
 
 Project that accompanies VGGI credit module.
 
