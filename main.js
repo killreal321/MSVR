@@ -158,6 +158,8 @@ let a = 0.5;
 let b = 10;
 let c = 0.5;
 
+const mS = 1.0 / 1000.0;
+
 const step = (max, splines = 20) => {
   return max / (splines - 1);
 };
@@ -215,9 +217,6 @@ function CreateSurfaceData() {
   }
   return {vertexList,textureList};
 }
-
-
-let orientationEvent = { alpha: 0, beta: 0, gamma: 0 };
 
 /* Initialize the WebGL context. Called from init() */
 function initGL() {
@@ -331,7 +330,7 @@ function init() {
 
   document.getElementById('orientation').addEventListener('change', async () => {
     if (document.getElementById('orientation').checked) {
-      startDeviceOrientation();
+      startGyroscope();
     }
   });
 
@@ -365,6 +364,73 @@ const getCamera = () =>
       });
   });
 
+function handleOrientation(event) {
+  const alpha = event.alpha; 
+  const beta = event.beta; 
+  const gamma = event.gamma; 
+
+  const alphaRad = alpha * (Math.PI / 180);
+  const betaRad = beta * (Math.PI / 180);
+  const gammaRad = gamma * (Math.PI / 180);
+
+  mat4.identity(rotationMatrix);
+  mat4.rotateZ(rotationMatrix, rotationMatrix, alphaRad);
+  mat4.rotateX(rotationMatrix, rotationMatrix, betaRad);
+  mat4.rotateY(rotationMatrix, rotationMatrix, gammaRad);
+
+  let deltaRotationVector = new Array();
+  deltaRotationVector.push(alphaRad, betaRad, gammaRad);
+
+  rotationMatrix = getRotationMatrixFromVector(deltaRotationVector);
+
+  rerender();
+}
+
+function getRotationMatrixFromVector(rotationVector) {
+  const x = rotationVector[0];
+  const y = rotationVector[1];
+  const z = rotationVector[2];
+  let w;
+
+  if (rotationVector.length >= 4) {
+    w = rotationVector[3];
+  } else {
+    w = 1 - x * x - y * y - z * z;
+    if(w > 0){
+       w = Math.sqrt(w);
+    }else{
+      w = 0;
+    }
+  }
+  const sq_x = 2 * x * x;
+  const sq_y = 2 * y * y;
+  const sq_z = 2 * z * z;
+  const xy = 2 * x * y;
+  const zw = 2 * z * w;
+  const xz = 2 * x * z;
+  const yw = 2 * y * w;
+  const yz = 2 * y * z;
+  const xw = 2 * x * w;
+  let R = [];
+  R.push(1 - sq_y - sq_z);
+  R.push(xy - zw);
+  R.push(xz + yw);
+  R.push(0.0);
+  R.push(xy + zw);
+  R.push(1 - sq_x - sq_z);
+  R.push(yz - xw);
+  R.push(0.0);
+  R.push(xz - yw);
+  R.push(yz + xw);
+  R.push(1 - sq_x - sq_y);
+  R.push(0.0);
+  R.push(0.0);
+  R.push(0.0);
+  R.push(0.0);
+  R.push(1.0);
+  return R;
+}
+
 const createCameraTexture = (gl) => {
   const texture = gl.createTexture();
 
@@ -378,33 +444,14 @@ const createCameraTexture = (gl) => {
   return texture;
 };
 
-const startDeviceOrientation = async () => {
-  // Перевірка наявності підтримки DeviceOrientationEvent та методу requestPermission
-  if (
-    typeof DeviceOrientationEvent?.requestPermission !== 'function' ||
-    typeof DeviceOrientationEvent === 'undefined'
-  ) {
-    throw new Error('DeviceOrientationEvent is not supported');
-  }
 
-  try {
-    // Запит на отримання дозволу на доступ до DeviceOrientationEvent
-    const permission = await DeviceOrientationEvent.requestPermission();
-    if (permission === 'granted') {
-      // Функція-обробник події "deviceorientation"
-      const handleOrientation = (event) => {
-        const { alpha, beta, gamma } = event;
-        // Збереження значень орієнтації у змінній orientationEvent
-        orientationEvent.alpha = alpha / 3;
-        orientationEvent.beta = beta / 3;
-        orientationEvent.gamma = gamma / 3;
-      };
-      // Додавання прослуховувача події "deviceorientation"
-      window.addEventListener('deviceorientation', handleOrientation, true);
-    }
-  } catch (error) {
-    // Обробка помилок під час отримання дозволу
-    alert(error);
-    console.error('Error:', error);
+function startGyroscope(){
+  if (window.DeviceOrientationEvent) {
+    let gyr = new Gyroscope({
+      freq: 30
+    })
+    gyr.addEventListener('deviceorientation', handleOrientation, true);
+  } else {
+    console.log("Device orientation events not supported");
   }
-};
+}
